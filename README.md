@@ -4,6 +4,25 @@
 
 Detect failures, propose repairs, and (when authorized by Level 0–3 policy) apply them. Integrates with x4-fleet and x4-evidence.
 
+<!-- X4-APEX-DIAGRAM-START:x4-autofix -->
+
+```mermaid
+flowchart LR
+    SIGNAL[CI or Fleet Failure] --> DETECT[Detect and Classify]
+    DETECT --> POLICY{Autonomy Level}
+    POLICY -->|0 Observe| REPORT[Report Only]
+    POLICY -->|1 Assist| PROPOSE[Prepare Patch and Open PR]
+    POLICY -->|2 Governed| BOUNDS[Check Hard Limits]
+    BOUNDS -->|inside bounds| PATCH[Apply Trivial Authorized Fix]
+    BOUNDS -->|outside bounds| HUMAN[Require Human Review]
+    POLICY -->|3 Never| STOP[Block High-Impact Action]
+    PROPOSE --> EVIDENCE[x4-evidence Receipt]
+    PATCH --> EVIDENCE
+    REPORT --> FLEET[x4-fleet Status]
+```
+
+<!-- X4-APEX-DIAGRAM-END:x4-autofix -->
+
 ## Autonomy Levels
 
 | Level | Name | Allowed |
