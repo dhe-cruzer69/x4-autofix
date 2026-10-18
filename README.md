@@ -47,24 +47,5 @@ Apache-2.0
 
 > Status: architecture documentation; implementation and deployment claims require independent verification.
 
-```mermaid
-flowchart TB
-  Patch[Proposed patch] --> Parse[Parse patch metadata]
-  Parse --> Paths{All paths allowlisted?}
-  Paths -->|no| RejectPath[Reject without write]
-  Paths -->|yes| Scan[Scan for prohibited operations]
-  Scan -->|unsafe| RejectRisk[Reject and explain]
-  Scan -->|clean| DryRun[Generate dry-run diff]
-  DryRun --> Review{Explicit apply approval?}
-  Review -->|no| Preview[Return preview only]
-  Review -->|yes| Snapshot[Capture pre-change hashes]
-  Snapshot --> Write[Apply atomically where supported]
-  Write --> Verify[Run targeted verification]
-  Verify -->|pass| Receipt[Write patch receipt]
-  Verify -->|fail| Rollback[Restore from snapshot]
-  Rollback --> RollbackCheck{Restore verified?}
-  RollbackCheck -->|yes| Failed[Return failure + rollback receipt]
-  RollbackCheck -->|no| Escalate[Stop; human recovery required]
-```
 **Evidence note:** Atomicity and rollback are filesystem-dependent. Verify backups, path handling, and failure-injection tests before enabling write mode.
 
